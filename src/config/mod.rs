@@ -6,14 +6,6 @@ use std::{io, error};
 use std::collections::HashMap;
 
 #[derive(Debug)]
-pub enum ConfigError { ReadError }
-
-impl From<io::Error> for ConfigError {
-    fn from(err: io::Error) -> ConfigError {
-        ConfigError::ReadError
-    }
-}
-
 pub struct GameConfig {
     loadtime: i64,
     turntime: i64,
@@ -55,11 +47,11 @@ fn read_lines_until_go<R: Read>(reader: &mut BufReader<R>) ->  HashMap<String,i6
     config_params
 }
 
-pub fn read_config<R: Read>(reader: &mut BufReader<R>) -> Result<GameConfig, ConfigError> {
+pub fn read_config<R: Read>(reader: &mut BufReader<R>) -> GameConfig {
     let fallback_value: i64 = 0;
     let mut config_params = read_lines_until_go(reader);
 
-    let a = GameConfig {
+    GameConfig {
         loadtime: config_params.get("loadtime").unwrap_or(&fallback_value).clone(),
         turntime: config_params.get("turntime").unwrap_or(&fallback_value).clone(),
         rows: config_params.get("rows").unwrap_or(&fallback_value).clone(),
@@ -69,8 +61,7 @@ pub fn read_config<R: Read>(reader: &mut BufReader<R>) -> Result<GameConfig, Con
         attackradius2: config_params.get("attackradius2").unwrap_or(&fallback_value).clone(),
         spawnradius2: config_params.get("spawnradius2").unwrap_or(&fallback_value).clone(),
         player_seed : config_params.get("player_seed").unwrap_or(&fallback_value).clone()
-    };
-    Result::Ok(a)
+    }
 }
 
 #[cfg(test)]
@@ -86,7 +77,7 @@ mod tests {
         let path = Path::new("test/resources/ant_config");
         let mut file = File::open(&path).unwrap();
         let mut buf_reader = BufReader::new(file);
-        let config = read_config(&mut buf_reader).unwrap();
+        let config = read_config(&mut buf_reader);
         assert_eq!(config.loadtime, 1);
         assert_eq!(config.turntime, 2);
         assert_eq!(config.rows, 3);
