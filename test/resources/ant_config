@@ -1,0 +1,10 @@
+loadtime 1
+turntime 2
+rows 3
+cols 4
+turns 5
+viewradius2 6
+attackradius2 7
+spawnradius2 8
+player_seed 9
+go
