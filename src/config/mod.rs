@@ -1,8 +1,5 @@
-use std::fs::File;
 use std::io::prelude::*;
-use std::path::Path;
 use std::io::BufReader;
-use std::{io, error};
 use std::collections::HashMap;
 
 #[derive(Debug)]
@@ -18,33 +15,9 @@ pub struct GameConfig {
     player_seed : i64
 }
 
-fn read_lines_until_go<R: Read>(reader: &mut BufReader<R>) ->  HashMap<String,i64> {
-    let mut config_params: HashMap<String,i64> = HashMap::new();
-    let mut done = false;
-
-    while !done {
-        let mut line = String::new();
-        let len = reader.read_line(&mut line).unwrap();
-        if(!line.is_empty()) {
-            line = line.trim().to_string();
-            if(line.eq("go")) {
-                done = true;
-            } else {
-                let mut pair = line.trim().split(" ");
-                let key = pair.next().unwrap();
-                let value = pair.next().unwrap();
-                config_params.insert(
-                    key.to_string(),
-                    value.parse::<i64>().unwrap());
-            }
-        }
-    }
-    config_params
-}
-
 pub fn read_config<R: Read>(reader: &mut BufReader<R>) -> GameConfig {
     let fallback_value: i64 = 0;
-    let mut config_params = read_lines_until_go(reader);
+    let config_params = read_lines_until_go(reader);
 
     GameConfig {
         loadtime: config_params.get("loadtime").unwrap_or(&fallback_value).clone(),
@@ -57,6 +30,30 @@ pub fn read_config<R: Read>(reader: &mut BufReader<R>) -> GameConfig {
         spawnradius2: config_params.get("spawnradius2").unwrap_or(&fallback_value).clone(),
         player_seed : config_params.get("player_seed").unwrap_or(&fallback_value).clone()
     }
+}
+
+fn read_lines_until_go<R: Read>(reader: &mut BufReader<R>) ->  HashMap<String,i64> {
+    let mut config_params: HashMap<String,i64> = HashMap::new();
+    let mut done = false;
+
+    while !done {
+        let mut line = String::new();
+        reader.read_line(&mut line).unwrap();
+        if !line.is_empty() {
+            line = line.trim().to_string();
+            if line.eq("go") {
+                done = true;
+            } else {
+                let mut pair = line.trim().split(" ");
+                let key = pair.next().unwrap();
+                let value = pair.next().unwrap();
+                config_params.insert(
+                    key.to_string(),
+                    value.parse::<i64>().unwrap());
+            }
+        }
+    }
+    config_params
 }
 
 #[cfg(test)]
