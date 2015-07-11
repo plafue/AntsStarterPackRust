@@ -20,24 +20,19 @@ pub struct GameConfig {
 
 fn read_lines_until_go<R: Read>(reader: &mut BufReader<R>) ->  HashMap<String,i64> {
     let mut config_params: HashMap<String,i64> = HashMap::new();
-
     let mut done = false;
 
     while !done {
         let mut line = String::new();
         let len = reader.read_line(&mut line).unwrap();
         if(!line.is_empty()) {
-            println!("{}",line);
             line = line.trim().to_string();
             if(line.eq("go")) {
                 done = true;
             } else {
-                println!("parsing!");
                 let mut pair = line.trim().split(" ");
                 let key = pair.next().unwrap();
                 let value = pair.next().unwrap();
-                println!("key: '{}'",key);
-                println!("value: '{}'",value);
                 config_params.insert(
                     key.to_string(),
                     value.parse::<i64>().unwrap());
