@@ -59,7 +59,6 @@ fn read_lines_until_go<R: Read>(reader: &mut BufReader<R>) ->  HashMap<String,i6
 #[cfg(test)]
 mod tests {
     use std::fs::File;
-    use std::io::prelude::*;
     use std::path::Path;
     use std::io::BufReader;
 
@@ -67,7 +66,7 @@ mod tests {
     #[test]
     fn read_config_works() {
         let path = Path::new("test/resources/ant_config");
-        let mut file = File::open(&path).unwrap();
+        let file = File::open(&path).unwrap();
         let mut buf_reader = BufReader::new(file);
         let config = read_config(&mut buf_reader);
         assert_eq!(config.loadtime, 1);
