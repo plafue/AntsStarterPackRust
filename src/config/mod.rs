@@ -32,25 +32,27 @@ pub fn read_config<R: Read>(reader: &mut BufReader<R>) -> GameConfig {
     }
 }
 
+fn parse_string_int_pair(line: String) -> (String, i64) {
+    let mut pair = line.trim().split(" ");
+    let key = pair.next().unwrap();
+    let value = pair.next().unwrap();
+    (key.to_string(), value.parse::<i64>().unwrap())
+}
+
 fn read_lines_until_go<R: Read>(reader: &mut BufReader<R>) ->  HashMap<String,i64> {
     let mut config_params: HashMap<String,i64> = HashMap::new();
-    let mut done = false;
 
-    while !done {
+    loop {
         let mut line = String::new();
         reader.read_line(&mut line).unwrap();
-        if !line.is_empty() {
-            line = line.trim().to_string();
-            if line.eq("go") {
-                done = true;
-            } else {
-                let mut pair = line.trim().split(" ");
-                let key = pair.next().unwrap();
-                let value = pair.next().unwrap();
-                config_params.insert(
-                    key.to_string(),
-                    value.parse::<i64>().unwrap());
-            }
+        line = line.trim().to_string();
+        if line.is_empty() {
+            continue;
+        } else if line.eq("go") {
+            break;
+        } else {
+            let (key, value) = parse_string_int_pair(line);
+            config_params.insert(key,value);
         }
     }
     config_params
