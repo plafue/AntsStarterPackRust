@@ -48,7 +48,7 @@ fn read_lines_until_go<R: Read>(reader: &mut BufReader<R>) ->  HashMap<String,i6
         line = line.trim().to_string();
         if line.is_empty() {
             continue;
-        } else if line.eq("go") {
+        } else if line.eq("ready") {
             break;
         } else {
             let (key, value) = parse_string_int_pair(line);
